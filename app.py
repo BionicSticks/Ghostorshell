@@ -31,7 +31,6 @@ def main():
         **Supported formats:**
         - Text files (.txt)
         - PDF documents (.pdf)
-        - Images (.jpg, .png, .jpeg)
         
         **How it works:**
         1. Upload your file
@@ -56,7 +55,7 @@ def main():
         # File uploader
         uploaded_file = st.file_uploader(
             "Choose a file",
-            type=["txt", "pdf", "jpg", "jpeg", "png"],
+            type=["txt", "pdf"],
             help="Drag and drop a file or click to browse"
         )
         

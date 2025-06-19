@@ -1,7 +1,5 @@
 import io
 import os
-from PIL import Image
-import pytesseract
 import PyPDF2
 import pdfplumber
 import streamlit as st
@@ -31,7 +29,7 @@ class FileProcessor:
             elif file_type == "application/pdf" or file_name.endswith('.pdf'):
                 return self._extract_text_from_pdf(uploaded_file)
             elif file_type.startswith("image/") or any(file_name.endswith(ext) for ext in ['.jpg', '.jpeg', '.png']):
-                return self._extract_text_from_image(uploaded_file)
+                raise ValueError("Image text extraction is currently not supported. Please use text or PDF files.")
             else:
                 raise ValueError(f"Unsupported file type: {file_type}")
                 
@@ -100,28 +98,7 @@ class FileProcessor:
         except Exception as e:
             raise Exception(f"PDF processing error: {e}")
     
-    def _extract_text_from_image(self, uploaded_file):
-        """Extract text from image using OCR"""
-        try:
-            # Open image
-            image = Image.open(uploaded_file)
-            
-            # Convert to RGB if needed
-            if image.mode != 'RGB':
-                image = image.convert('RGB')
-            
-            # Perform OCR
-            extracted_text = pytesseract.image_to_string(image, lang='eng')
-            
-            if not extracted_text.strip():
-                raise Exception("No text found in image")
-            
-            return extracted_text.strip()
-            
-        except pytesseract.TesseractNotFoundError:
-            raise Exception("Tesseract OCR not found. Please install tesseract-ocr package.")
-        except Exception as e:
-            raise Exception(f"OCR processing failed: {e}")
+
     
     def validate_file(self, uploaded_file, max_size_mb=10):
         """
@@ -145,13 +122,10 @@ class FileProcessor:
         # Check file type
         allowed_types = [
             "text/plain",
-            "application/pdf", 
-            "image/jpeg",
-            "image/jpg", 
-            "image/png"
+            "application/pdf"
         ]
         
-        allowed_extensions = ['.txt', '.pdf', '.jpg', '.jpeg', '.png']
+        allowed_extensions = ['.txt', '.pdf']
         
         file_type_valid = uploaded_file.type.lower() in allowed_types
         extension_valid = any(uploaded_file.name.lower().endswith(ext) for ext in allowed_extensions)
