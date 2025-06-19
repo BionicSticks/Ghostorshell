@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from ai_detector import AIDetector
 from file_processor import FileProcessor
+from database import DatabaseManager
 import time
 
 # Configure page
@@ -31,6 +32,7 @@ def main():
         **Supported formats:**
         - Text files (.txt)
         - PDF documents (.pdf)
+        - Word documents (.docx)
         
         **How it works:**
         1. Upload your file

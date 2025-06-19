@@ -2,6 +2,7 @@ import io
 import os
 import PyPDF2
 import pdfplumber
+from docx import Document
 import streamlit as st
 
 class FileProcessor:
@@ -28,8 +29,10 @@ class FileProcessor:
                 return self._extract_text_from_txt(uploaded_file)
             elif file_type == "application/pdf" or file_name.endswith('.pdf'):
                 return self._extract_text_from_pdf(uploaded_file)
+            elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" or file_name.endswith('.docx'):
+                return self._extract_text_from_docx(uploaded_file)
             elif file_type.startswith("image/") or any(file_name.endswith(ext) for ext in ['.jpg', '.jpeg', '.png']):
-                raise ValueError("Image text extraction is currently not supported. Please use text or PDF files.")
+                raise ValueError("Image text extraction is currently not supported. Please use text, PDF, or Word files.")
             else:
                 raise ValueError(f"Unsupported file type: {file_type}")
                 
@@ -98,7 +101,34 @@ class FileProcessor:
         except Exception as e:
             raise Exception(f"PDF processing error: {e}")
     
-
+    def _extract_text_from_docx(self, uploaded_file):
+        """Extract text from Word document (.docx)"""
+        try:
+            # Read the document
+            doc = Document(uploaded_file)
+            
+            # Extract text from all paragraphs
+            text_content = []
+            for paragraph in doc.paragraphs:
+                if paragraph.text.strip():
+                    text_content.append(paragraph.text.strip())
+            
+            # Extract text from tables if present
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        if cell.text.strip():
+                            text_content.append(cell.text.strip())
+            
+            full_text = "\n".join(text_content)
+            
+            if not full_text.strip():
+                raise Exception("No text content found in Word document")
+            
+            return full_text.strip()
+            
+        except Exception as e:
+            raise Exception(f"Word document processing failed: {e}")
     
     def validate_file(self, uploaded_file, max_size_mb=10):
         """
@@ -122,10 +152,11 @@ class FileProcessor:
         # Check file type
         allowed_types = [
             "text/plain",
-            "application/pdf"
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         ]
         
-        allowed_extensions = ['.txt', '.pdf']
+        allowed_extensions = ['.txt', '.pdf', '.docx']
         
         file_type_valid = uploaded_file.type.lower() in allowed_types
         extension_valid = any(uploaded_file.name.lower().endswith(ext) for ext in allowed_extensions)
