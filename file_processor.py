@@ -3,6 +3,8 @@ import os
 import PyPDF2
 import pdfplumber
 from docx import Document
+from PIL import Image
+import pytesseract
 import streamlit as st
 
 class FileProcessor:
@@ -32,7 +34,7 @@ class FileProcessor:
             elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" or file_name.endswith('.docx'):
                 return self._extract_text_from_docx(uploaded_file)
             elif file_type.startswith("image/") or any(file_name.endswith(ext) for ext in ['.jpg', '.jpeg', '.png']):
-                raise ValueError("Image text extraction is currently not supported. Please use text, PDF, or Word files.")
+                return self._extract_text_from_image(uploaded_file)
             else:
                 raise ValueError(f"Unsupported file type: {file_type}")
                 
@@ -130,6 +132,35 @@ class FileProcessor:
         except Exception as e:
             raise Exception(f"Word document processing failed: {e}")
     
+    def _extract_text_from_image(self, uploaded_file):
+        """Extract text from image using OCR"""
+        try:
+            # Open image
+            image = Image.open(uploaded_file)
+            
+            # Convert to RGB if needed
+            if image.mode != 'RGB':
+                image = image.convert('RGB')
+            
+            # Perform OCR with enhanced settings
+            custom_config = r'--oem 3 --psm 6'
+            extracted_text = pytesseract.image_to_string(image, config=custom_config, lang='eng')
+            
+            if not extracted_text.strip():
+                # Try with different PSM mode if first attempt fails
+                custom_config = r'--oem 3 --psm 3'
+                extracted_text = pytesseract.image_to_string(image, config=custom_config, lang='eng')
+            
+            if not extracted_text.strip():
+                raise Exception("No readable text found in image. Please ensure the image contains clear, readable text.")
+            
+            return extracted_text.strip()
+            
+        except pytesseract.TesseractNotFoundError:
+            raise Exception("OCR service not available. Please try with text or PDF files instead.")
+        except Exception as e:
+            raise Exception(f"Image text extraction failed: {e}")
+    
     def validate_file(self, uploaded_file, max_size_mb=10):
         """
         Validate uploaded file
@@ -153,10 +184,13 @@ class FileProcessor:
         allowed_types = [
             "text/plain",
             "application/pdf",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "image/jpeg",
+            "image/jpg",
+            "image/png"
         ]
         
-        allowed_extensions = ['.txt', '.pdf', '.docx']
+        allowed_extensions = ['.txt', '.pdf', '.docx', '.jpg', '.jpeg', '.png']
         
         file_type_valid = uploaded_file.type.lower() in allowed_types
         extension_valid = any(uploaded_file.name.lower().endswith(ext) for ext in allowed_extensions)
