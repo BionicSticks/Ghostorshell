@@ -215,7 +215,7 @@ def analyze_document_tab():
         
         # File uploader
         uploaded_file = st.file_uploader(
-            "",
+            "Choose file",
             type=["txt", "pdf", "docx"],
             label_visibility="collapsed"
         )
@@ -344,9 +344,13 @@ def analyze_document_tab():
             # Analysis reasoning
             if result.get('reasoning'):
                 st.markdown("### Analysis Details")
+                reasoning_text = result['reasoning']
+                if is_demo:
+                    reasoning_text += "\n\n*Note: This is a simulated analysis for demonstration purposes.*"
+                
                 st.markdown(f"""
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0;">
-                    <p style="margin: 0; color: #374151; line-height: 1.6;">{result['reasoning']}</p>
+                <div style="background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 128, 0.05)); border: 1px solid #00ffff; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; backdrop-filter: blur(5px);">
+                    <p style="margin: 0; color: #00d4ff; line-height: 1.6;">{reasoning_text}</p>
                 </div>
                 """, unsafe_allow_html=True)
             
