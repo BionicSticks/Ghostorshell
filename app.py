@@ -146,15 +146,15 @@ def main():
         box-shadow: 0 1px 3px rgba(14, 165, 233, 0.3);
     }
     .demo-banner {
-        background: linear-gradient(45deg, rgba(255, 255, 0, 0.1), rgba(255, 128, 0, 0.1));
-        border: 1px solid #ffff00;
+        background: linear-gradient(45deg, rgba(14, 165, 233, 0.1), rgba(139, 92, 246, 0.1));
+        border: 1px solid rgba(14, 165, 233, 0.4);
         border-radius: 0.5rem;
         padding: 1rem;
         margin: 1rem 0;
         text-align: center;
-        color: #ffff00;
+        color: #7dd3fc;
         font-family: 'Orbitron', monospace;
-        box-shadow: 0 0 15px rgba(255, 255, 0, 0.3);
+        box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
     }
     h1, h2, h3, h4, h5, h6 {
         color: #7dd3fc;
@@ -298,7 +298,7 @@ def analyze_document_tab():
             
             # Check if this is demo mode
             is_demo = result.get('demo_mode', False)
-            demo_indicator = "<span style='font-size: 0.8rem; color: #ffff00;'>(DEMO)</span>" if is_demo else ""
+            demo_indicator = "<span style='font-size: 0.8rem; color: #8b5cf6;'>(DEMO)</span>" if is_demo else ""
             
             # Display main result in clean card
             st.markdown(f"""
