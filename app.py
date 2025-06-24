@@ -36,42 +36,42 @@ def main():
     
     .main-header {
         font-family: 'Orbitron', monospace;
-        font-weight: 900;
-        font-size: 3rem;
-        background: linear-gradient(45deg, #00ffff, #ff0080);
+        font-weight: 700;
+        font-size: 2.5rem;
+        background: linear-gradient(45deg, #00ccdd, #cc0066);
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-shadow: 0 0 20px #00ffff;
+        text-shadow: 0 0 8px rgba(0, 204, 221, 0.3);
         margin-bottom: 0.5rem;
         text-align: center;
     }
     .sub-header {
         font-family: 'Orbitron', monospace;
         font-weight: 400;
-        font-size: 1.2rem;
-        color: #00d4ff;
+        font-size: 1.1rem;
+        color: #7dd3fc;
         margin-bottom: 2rem;
         text-align: center;
-        text-shadow: 0 0 10px #00d4ff;
+        text-shadow: 0 0 4px rgba(125, 211, 252, 0.2);
     }
     .metric-card {
-        background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 128, 0.1) 100%);
-        border: 1px solid #00ffff;
+        background: linear-gradient(135deg, rgba(0, 204, 221, 0.08) 0%, rgba(204, 0, 102, 0.08) 100%);
+        border: 1px solid rgba(0, 204, 221, 0.3);
         border-radius: 0.5rem;
         padding: 1.5rem;
         margin: 0.5rem 0;
-        box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 8px rgba(0, 204, 221, 0.1);
+        backdrop-filter: blur(5px);
     }
     .result-card {
-        background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(26, 26, 46, 0.9) 100%);
-        border: 2px solid #ff0080;
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(26, 26, 46, 0.8) 100%);
+        border: 1px solid rgba(204, 0, 102, 0.4);
         border-radius: 0.75rem;
         padding: 2rem;
-        box-shadow: 0 0 30px rgba(255, 0, 128, 0.4);
+        box-shadow: 0 4px 20px rgba(204, 0, 102, 0.15);
         margin: 1rem 0;
-        backdrop-filter: blur(15px);
+        backdrop-filter: blur(8px);
     }
     .status-badge {
         display: inline-block;
@@ -85,71 +85,65 @@ def main():
         letter-spacing: 1px;
     }
     .status-ai {
-        background: linear-gradient(45deg, #ff0080, #ff4040);
+        background: linear-gradient(45deg, #dc2626, #ef4444);
         color: #ffffff;
-        border: 1px solid #ff0080;
-        box-shadow: 0 0 15px rgba(255, 0, 128, 0.6);
-        text-shadow: 0 0 5px #ffffff;
+        border: 1px solid #dc2626;
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+        text-shadow: none;
     }
     .status-human {
-        background: linear-gradient(45deg, #00ffff, #00ff80);
-        color: #000000;
-        border: 1px solid #00ffff;
-        box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
-        text-shadow: 0 0 5px #000000;
+        background: linear-gradient(45deg, #059669, #10b981);
+        color: #ffffff;
+        border: 1px solid #059669;
+        box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25);
+        text-shadow: none;
     }
     .status-uncertain {
-        background: linear-gradient(45deg, #ffff00, #ff8000);
-        color: #000000;
-        border: 1px solid #ffff00;
-        box-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
-        text-shadow: 0 0 5px #000000;
+        background: linear-gradient(45deg, #d97706, #f59e0b);
+        color: #ffffff;
+        border: 1px solid #d97706;
+        box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
+        text-shadow: none;
     }
     .upload-area {
-        border: 2px dashed #00ffff;
+        border: 2px dashed rgba(0, 204, 221, 0.4);
         border-radius: 0.5rem;
         padding: 2rem;
         text-align: center;
-        background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, rgba(255, 0, 128, 0.05) 100%);
+        background: linear-gradient(135deg, rgba(0, 204, 221, 0.03) 0%, rgba(204, 0, 102, 0.03) 100%);
         transition: all 0.3s ease;
-        backdrop-filter: blur(5px);
+        backdrop-filter: blur(3px);
     }
     .upload-area:hover {
-        border-color: #ff0080;
-        background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 128, 0.1) 100%);
-        box-shadow: 0 0 25px rgba(255, 0, 128, 0.3);
+        border-color: rgba(204, 0, 102, 0.6);
+        background: linear-gradient(135deg, rgba(0, 204, 221, 0.06) 0%, rgba(204, 0, 102, 0.06) 100%);
+        box-shadow: 0 4px 15px rgba(204, 0, 102, 0.1);
     }
     .stTab {
         font-family: 'Orbitron', monospace;
         color: #00ffff;
     }
     .stButton > button {
-        background: linear-gradient(45deg, #00ffff, #ff0080);
-        color: #000000;
+        background: linear-gradient(45deg, #0ea5e9, #3b82f6);
+        color: #ffffff;
         border: none;
-        border-radius: 2rem;
+        border-radius: 0.5rem;
         font-family: 'Orbitron', monospace;
-        font-weight: 600;
+        font-weight: 500;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-        transition: all 0.3s ease;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        transition: all 0.2s ease;
     }
     .stButton > button:hover {
-        box-shadow: 0 0 30px rgba(255, 0, 128, 0.7);
-        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        transform: translateY(-1px);
     }
     .progress-bar {
-        background: linear-gradient(90deg, #00ffff, #ff0080);
-        height: 8px;
-        border-radius: 4px;
-        box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
-        animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-        0% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.6); }
-        50% { box-shadow: 0 0 20px rgba(255, 0, 128, 0.8); }
-        100% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.6); }
+        background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+        height: 6px;
+        border-radius: 3px;
+        box-shadow: 0 1px 3px rgba(14, 165, 233, 0.3);
     }
     .demo-banner {
         background: linear-gradient(45deg, rgba(255, 255, 0, 0.1), rgba(255, 128, 0, 0.1));
@@ -163,12 +157,12 @@ def main():
         box-shadow: 0 0 15px rgba(255, 255, 0, 0.3);
     }
     h1, h2, h3, h4, h5, h6 {
-        color: #00ffff;
+        color: #7dd3fc;
         font-family: 'Orbitron', monospace;
-        text-shadow: 0 0 10px #00ffff;
+        text-shadow: 0 1px 2px rgba(125, 211, 252, 0.1);
     }
     p, .stMarkdown {
-        color: #00d4ff;
+        color: #94a3b8;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -310,33 +304,33 @@ def analyze_document_tab():
             st.markdown(f"""
             <div class="result-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="margin: 0; color: #00ffff;">Detection Result {demo_indicator}</h3>
+                    <h3 style="margin: 0; color: #7dd3fc;">Detection Result {demo_indicator}</h3>
                     <span class="status-badge {badge_class}">{result_text}</span>
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                     <div>
-                        <p style="margin: 0; font-size: 0.875rem; color: #00d4ff;">AI Probability</p>
-                        <p style="margin: 0; font-size: 1.5rem; font-weight: 600; color: #00ffff;">{ai_probability:.1%}</p>
+                        <p style="margin: 0; font-size: 0.875rem; color: #94a3b8;">AI Probability</p>
+                        <p style="margin: 0; font-size: 1.5rem; font-weight: 600; color: #7dd3fc;">{ai_probability:.1%}</p>
                     </div>
                     <div>
-                        <p style="margin: 0; font-size: 0.875rem; color: #00d4ff;">Confidence</p>
-                        <p style="margin: 0; font-size: 1.5rem; font-weight: 600; color: #00ffff;">{confidence:.1%}</p>
+                        <p style="margin: 0; font-size: 0.875rem; color: #94a3b8;">Confidence</p>
+                        <p style="margin: 0; font-size: 1.5rem; font-weight: 600; color: #7dd3fc;">{confidence:.1%}</p>
                     </div>
                 </div>
                 
                 <div style="margin-bottom: 1rem;">
-                    <div style="background: rgba(0, 255, 255, 0.1); border-radius: 0.375rem; height: 0.5rem; overflow: hidden; border: 1px solid #00ffff;">
+                    <div style="background: rgba(14, 165, 233, 0.1); border-radius: 0.375rem; height: 0.4rem; overflow: hidden; border: 1px solid rgba(14, 165, 233, 0.3);">
                         <div class="progress-bar" style="height: 100%; width: {ai_probability * 100}%; transition: width 0.3s ease;"></div>
                     </div>
-                    <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: #00d4ff;">AI Likelihood</p>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: #94a3b8;">AI Likelihood</p>
                 </div>
                 
                 <div>
-                    <div style="background: rgba(255, 0, 128, 0.1); border-radius: 0.375rem; height: 0.5rem; overflow: hidden; border: 1px solid #ff0080;">
-                        <div style="background: linear-gradient(90deg, #ff0080, #00ffff); height: 100%; width: {confidence * 100}%; transition: width 0.3s ease; box-shadow: 0 0 10px rgba(255, 0, 128, 0.6);"></div>
+                    <div style="background: rgba(139, 92, 246, 0.1); border-radius: 0.375rem; height: 0.4rem; overflow: hidden; border: 1px solid rgba(139, 92, 246, 0.3);">
+                        <div style="background: linear-gradient(90deg, #8b5cf6, #0ea5e9); height: 100%; width: {confidence * 100}%; transition: width 0.3s ease;"></div>
                     </div>
-                    <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: #00d4ff;">Confidence Score</p>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: #94a3b8;">Confidence Score</p>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -349,8 +343,8 @@ def analyze_document_tab():
                     reasoning_text += "\n\n*Note: This is a simulated analysis for demonstration purposes.*"
                 
                 st.markdown(f"""
-                <div style="background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 128, 0.05)); border: 1px solid #00ffff; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; backdrop-filter: blur(5px);">
-                    <p style="margin: 0; color: #00d4ff; line-height: 1.6;">{reasoning_text}</p>
+                <div style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(139, 92, 246, 0.05)); border: 1px solid rgba(14, 165, 233, 0.3); border-radius: 0.5rem; padding: 1rem; margin: 1rem 0; backdrop-filter: blur(3px);">
+                    <p style="margin: 0; color: #94a3b8; line-height: 1.6;">{reasoning_text}</p>
                 </div>
                 """, unsafe_allow_html=True)
             
