@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 from ai_detector import AIDetector
+from demo_detector import DemoAIDetector
 from file_processor import FileProcessor
 from database import DatabaseManager
 import time
@@ -16,78 +17,158 @@ st.set_page_config(
 # Initialize processors
 @st.cache_resource
 def init_processors():
-    return AIDetector(), FileProcessor(), DatabaseManager()
+    api_key = os.getenv("OPENAI_API_KEY")
+    if api_key:
+        return AIDetector(), FileProcessor(), DatabaseManager()
+    else:
+        return DemoAIDetector(), FileProcessor(), DatabaseManager()
 
 def main():
-    # Custom CSS for sleek styling
+    # Custom CSS for Tron-inspired neon aesthetic
     st.markdown("""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+    
+    .stApp {
+        background: linear-gradient(45deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        color: #00ffff;
+    }
+    
     .main-header {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        font-weight: 600;
-        font-size: 2.5rem;
-        color: #0f172a;
+        font-family: 'Orbitron', monospace;
+        font-weight: 900;
+        font-size: 3rem;
+        background: linear-gradient(45deg, #00ffff, #ff0080);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px #00ffff;
         margin-bottom: 0.5rem;
+        text-align: center;
     }
     .sub-header {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-family: 'Orbitron', monospace;
         font-weight: 400;
-        font-size: 1.1rem;
-        color: #64748b;
+        font-size: 1.2rem;
+        color: #00d4ff;
         margin-bottom: 2rem;
+        text-align: center;
+        text-shadow: 0 0 10px #00d4ff;
     }
     .metric-card {
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-        border: 1px solid #e2e8f0;
+        background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 128, 0.1) 100%);
+        border: 1px solid #00ffff;
         border-radius: 0.5rem;
         padding: 1.5rem;
         margin: 0.5rem 0;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
     }
     .result-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(26, 26, 46, 0.9) 100%);
+        border: 2px solid #ff0080;
         border-radius: 0.75rem;
         padding: 2rem;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 30px rgba(255, 0, 128, 0.4);
         margin: 1rem 0;
+        backdrop-filter: blur(15px);
     }
     .status-badge {
         display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 0.375rem;
+        padding: 0.4rem 1rem;
+        border-radius: 2rem;
         font-size: 0.875rem;
-        font-weight: 500;
+        font-weight: 600;
         margin: 0.25rem 0;
+        font-family: 'Orbitron', monospace;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     .status-ai {
-        background-color: #fef2f2;
-        color: #dc2626;
-        border: 1px solid #fecaca;
+        background: linear-gradient(45deg, #ff0080, #ff4040);
+        color: #ffffff;
+        border: 1px solid #ff0080;
+        box-shadow: 0 0 15px rgba(255, 0, 128, 0.6);
+        text-shadow: 0 0 5px #ffffff;
     }
     .status-human {
-        background-color: #f0fdf4;
-        color: #059669;
-        border: 1px solid #bbf7d0;
+        background: linear-gradient(45deg, #00ffff, #00ff80);
+        color: #000000;
+        border: 1px solid #00ffff;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+        text-shadow: 0 0 5px #000000;
     }
     .status-uncertain {
-        background-color: #fffbeb;
-        color: #d97706;
-        border: 1px solid #fed7aa;
+        background: linear-gradient(45deg, #ffff00, #ff8000);
+        color: #000000;
+        border: 1px solid #ffff00;
+        box-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
+        text-shadow: 0 0 5px #000000;
     }
     .upload-area {
-        border: 2px dashed #cbd5e1;
+        border: 2px dashed #00ffff;
         border-radius: 0.5rem;
         padding: 2rem;
         text-align: center;
-        background: #f8fafc;
-        transition: all 0.2s ease;
+        background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, rgba(255, 0, 128, 0.05) 100%);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
     }
     .upload-area:hover {
-        border-color: #3b82f6;
-        background: #f0f9ff;
+        border-color: #ff0080;
+        background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 128, 0.1) 100%);
+        box-shadow: 0 0 25px rgba(255, 0, 128, 0.3);
     }
     .stTab {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Orbitron', monospace;
+        color: #00ffff;
+    }
+    .stButton > button {
+        background: linear-gradient(45deg, #00ffff, #ff0080);
+        color: #000000;
+        border: none;
+        border-radius: 2rem;
+        font-family: 'Orbitron', monospace;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        transition: all 0.3s ease;
+    }
+    .stButton > button:hover {
+        box-shadow: 0 0 30px rgba(255, 0, 128, 0.7);
+        transform: translateY(-2px);
+    }
+    .progress-bar {
+        background: linear-gradient(90deg, #00ffff, #ff0080);
+        height: 8px;
+        border-radius: 4px;
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.6); }
+        50% { box-shadow: 0 0 20px rgba(255, 0, 128, 0.8); }
+        100% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.6); }
+    }
+    .demo-banner {
+        background: linear-gradient(45deg, rgba(255, 255, 0, 0.1), rgba(255, 128, 0, 0.1));
+        border: 1px solid #ffff00;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin: 1rem 0;
+        text-align: center;
+        color: #ffff00;
+        font-family: 'Orbitron', monospace;
+        box-shadow: 0 0 15px rgba(255, 255, 0, 0.3);
+    }
+    h1, h2, h3, h4, h5, h6 {
+        color: #00ffff;
+        font-family: 'Orbitron', monospace;
+        text-shadow: 0 0 10px #00ffff;
+    }
+    p, .stMarkdown {
+        color: #00d4ff;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -112,11 +193,17 @@ def analyze_document_tab():
     with col1:
         st.markdown("### Upload Document")
         
-        # API Key status check
+        # Check for demo mode or API key
         api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            st.error("OpenAI API key required. Please configure your API key to continue.")
-            st.stop()
+        demo_mode = not api_key
+        
+        if demo_mode:
+            st.markdown("""
+            <div class="demo-banner">
+                <h4 style="margin: 0 0 0.5rem 0;">DEMO MODE ACTIVE</h4>
+                <p style="margin: 0; font-size: 0.9rem;">Using simulated AI detection. Configure OpenAI, Grok (xAI), or other compatible API key for live analysis.</p>
+            </div>
+            """, unsafe_allow_html=True)
         
         # File upload section
         st.markdown("""
@@ -163,29 +250,32 @@ def analyze_document_tab():
                         st.session_state.extracted_text = text_content
                         st.session_state.file_name = uploaded_file.name
                     
-                    with st.spinner("Analyzing content..."):
+                    spinner_text = "Simulating analysis..." if demo_mode else "Analyzing content..."
+                    with st.spinner(spinner_text):
                         # Analyze for AI content
                         detection_result = ai_detector.detect_ai_content(text_content)
                         st.session_state.detection_result = detection_result
                     
-                    # Save to database
-                    with st.spinner("Saving results..."):
-                        try:
-                            file_extension = uploaded_file.name.split('.')[-1].lower()
-                            record_id = db_manager.save_analysis(
-                                filename=uploaded_file.name,
-                                file_type=file_extension,
-                                file_size=uploaded_file.size,
-                                text_length=len(text_content),
-                                ai_probability=detection_result['ai_probability'],
-                                confidence=detection_result['confidence'],
-                                reasoning=detection_result['reasoning']
-                            )
-                            st.session_state.record_id = record_id
-                        except Exception as db_error:
-                            st.warning(f"Analysis complete but database save failed: {db_error}")
+                    # Save to database (only in live mode)
+                    if not demo_mode:
+                        with st.spinner("Saving results..."):
+                            try:
+                                file_extension = uploaded_file.name.split('.')[-1].lower()
+                                record_id = db_manager.save_analysis(
+                                    filename=uploaded_file.name,
+                                    file_type=file_extension,
+                                    file_size=uploaded_file.size,
+                                    text_length=len(text_content),
+                                    ai_probability=detection_result['ai_probability'],
+                                    confidence=detection_result['confidence'],
+                                    reasoning=detection_result['reasoning']
+                                )
+                                st.session_state.record_id = record_id
+                            except Exception as db_error:
+                                st.warning(f"Analysis complete but database save failed: {db_error}")
                     
-                    st.success("Analysis complete and saved")
+                    success_msg = "Demo analysis complete" if demo_mode else "Analysis complete and saved"
+                    st.success(success_msg)
                     
                 except Exception as e:
                     st.error(f"Error processing file: {str(e)}")
@@ -212,37 +302,41 @@ def analyze_document_tab():
                 badge_class = "status-human"
                 result_text = "Human Written"
             
+            # Check if this is demo mode
+            is_demo = result.get('demo_mode', False)
+            demo_indicator = "<span style='font-size: 0.8rem; color: #ffff00;'>(DEMO)</span>" if is_demo else ""
+            
             # Display main result in clean card
             st.markdown(f"""
             <div class="result-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="margin: 0; color: #0f172a;">Detection Result</h3>
+                    <h3 style="margin: 0; color: #00ffff;">Detection Result {demo_indicator}</h3>
                     <span class="status-badge {badge_class}">{result_text}</span>
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                     <div>
-                        <p style="margin: 0; font-size: 0.875rem; color: #64748b;">AI Probability</p>
-                        <p style="margin: 0; font-size: 1.5rem; font-weight: 600; color: #0f172a;">{ai_probability:.1%}</p>
+                        <p style="margin: 0; font-size: 0.875rem; color: #00d4ff;">AI Probability</p>
+                        <p style="margin: 0; font-size: 1.5rem; font-weight: 600; color: #00ffff;">{ai_probability:.1%}</p>
                     </div>
                     <div>
-                        <p style="margin: 0; font-size: 0.875rem; color: #64748b;">Confidence</p>
-                        <p style="margin: 0; font-size: 1.5rem; font-weight: 600; color: #0f172a;">{confidence:.1%}</p>
+                        <p style="margin: 0; font-size: 0.875rem; color: #00d4ff;">Confidence</p>
+                        <p style="margin: 0; font-size: 1.5rem; font-weight: 600; color: #00ffff;">{confidence:.1%}</p>
                     </div>
                 </div>
                 
                 <div style="margin-bottom: 1rem;">
-                    <div style="background: #f1f5f9; border-radius: 0.375rem; height: 0.5rem; overflow: hidden;">
-                        <div style="background: #3b82f6; height: 100%; width: {ai_probability * 100}%; transition: width 0.3s ease;"></div>
+                    <div style="background: rgba(0, 255, 255, 0.1); border-radius: 0.375rem; height: 0.5rem; overflow: hidden; border: 1px solid #00ffff;">
+                        <div class="progress-bar" style="height: 100%; width: {ai_probability * 100}%; transition: width 0.3s ease;"></div>
                     </div>
-                    <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: #64748b;">AI Likelihood</p>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: #00d4ff;">AI Likelihood</p>
                 </div>
                 
                 <div>
-                    <div style="background: #f1f5f9; border-radius: 0.375rem; height: 0.5rem; overflow: hidden;">
-                        <div style="background: #10b981; height: 100%; width: {confidence * 100}%; transition: width 0.3s ease;"></div>
+                    <div style="background: rgba(255, 0, 128, 0.1); border-radius: 0.375rem; height: 0.5rem; overflow: hidden; border: 1px solid #ff0080;">
+                        <div style="background: linear-gradient(90deg, #ff0080, #00ffff); height: 100%; width: {confidence * 100}%; transition: width 0.3s ease; box-shadow: 0 0 10px rgba(255, 0, 128, 0.6);"></div>
                     </div>
-                    <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: #64748b;">Confidence Score</p>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: #00d4ff;">Confidence Score</p>
                 </div>
             </div>
             """, unsafe_allow_html=True)
