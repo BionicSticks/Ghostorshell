@@ -233,6 +233,9 @@ def analyze_document_tab():
                     
                     # Show processing status
                     with st.spinner("Processing file..."):
+                        # Validate file first
+                        file_processor.validate_file(uploaded_file)
+                        
                         # Extract text based on file type
                         text_content = file_processor.extract_text(uploaded_file)
                         
