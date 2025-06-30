@@ -25,6 +25,19 @@ class AnalysisRecord(Base):
     reasoning = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     ip_address = Column(String(45), nullable=True)  # For basic tracking
+    visitor_id = Column(String(64), nullable=True)  # Unique visitor identifier
+
+class VisitorCredit(Base):
+    __tablename__ = "visitor_credits"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    visitor_id = Column(String(64), unique=True, nullable=False, index=True)
+    ip_address = Column(String(45), nullable=False)
+    credits_remaining = Column(Integer, default=1, nullable=False)  # Start with 1 free credit
+    total_purchased = Column(Integer, default=0, nullable=False)  # Track total credits purchased
+    last_activity = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    stripe_payment_id = Column(String(255), nullable=True)  # For payment tracking
     
 class DatabaseManager:
     def __init__(self):
@@ -36,7 +49,7 @@ class DatabaseManager:
         return SessionLocal()
     
     def save_analysis(self, filename, file_type, file_size, text_length, 
-                     ai_probability, confidence, reasoning, ip_address=None):
+                     ai_probability, confidence, reasoning, ip_address=None, visitor_id=None):
         """
         Save analysis results to database
         
@@ -49,6 +62,7 @@ class DatabaseManager:
             confidence: Confidence score (0-1)
             reasoning: Analysis reasoning text
             ip_address: Client IP address (optional)
+            visitor_id: Unique visitor identifier (optional)
             
         Returns:
             int: ID of the saved record
@@ -63,7 +77,8 @@ class DatabaseManager:
                 ai_probability=ai_probability,
                 confidence=confidence,
                 reasoning=reasoning,
-                ip_address=ip_address
+                ip_address=ip_address,
+                visitor_id=visitor_id
             )
             session.add(record)
             session.commit()
