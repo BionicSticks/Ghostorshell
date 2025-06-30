@@ -198,19 +198,11 @@ def analyze_document_tab():
             </div>
             """, unsafe_allow_html=True)
         
-        # File upload section
-        st.markdown("""
-        <div class="upload-area">
-            <p style="margin: 0; color: #64748b;">Drag and drop your file here or click to browse</p>
-            <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; color: #94a3b8;">Supported: .txt, .pdf, .docx, .jpg, .png (max 10MB)</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
         # File uploader
         uploaded_file = st.file_uploader(
-            "Choose file",
+            "Drag and drop your file here or click to browse",
             type=["txt", "pdf", "docx", "jpg", "jpeg", "png"],
-            label_visibility="collapsed"
+            help="Supported formats: .txt, .pdf, .docx, .jpg, .png (max 10MB)"
         )
         
         if uploaded_file is not None:
