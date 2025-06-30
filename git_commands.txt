@@ -1,0 +1,20 @@
+# Git Commands to Push GhostOrShell to GitHub
+
+# 1. Add your GitHub repository as remote origin
+git remote add origin https://github.com/BionicSticks/Ghostorshell.git
+
+# 2. Add any new files (like .gitignore)
+git add .
+
+# 3. Commit any pending changes
+git commit -m "Add .gitignore and latest updates for GitHub"
+
+# 4. Push to GitHub (main branch)
+git push -u origin main
+
+# If you encounter authentication issues, you may need to:
+# - Use a Personal Access Token instead of password
+# - Or set up SSH keys for GitHub
+
+# To verify the remote was added correctly:
+git remote -v
