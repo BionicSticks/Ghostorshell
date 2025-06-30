@@ -202,25 +202,33 @@ def analyze_document_tab():
         api_key = os.getenv("OPENAI_API_KEY")
         demo_mode = not api_key
         
-        # Show credit status
-        if visitor_credits.credits_remaining > 0:
-            st.markdown(f"""
-            <div style="padding: 0.75rem; background: linear-gradient(135deg, #059669 0%, #10b981 100%); border-radius: 0.5rem; margin-bottom: 1rem;">
-                <p style="margin: 0; color: white; font-weight: 600;">Credits remaining: {visitor_credits.credits_remaining}</p>
+        # Check if this is a new user or has exhausted free trial
+        has_used_free_trial = visitor_credits.total_purchased > 0 or visitor_credits.credits_remaining == 0
+        
+        if not has_used_free_trial:
+            # First-time visitor - show "try it out" message
+            st.markdown("""
+            <div style="padding: 0.75rem; background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%); border-radius: 0.5rem; margin-bottom: 1rem;">
+                <p style="margin: 0; color: white; font-weight: 600;">Try GhostOrShell free - analyze your first document</p>
             </div>
             """, unsafe_allow_html=True)
         else:
-            # Show paywall
+            # Show paywall modal/overlay
             st.markdown("""
-            <div style="padding: 1.5rem; background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); border-radius: 0.5rem; margin-bottom: 1rem;">
-                <h4 style="margin: 0 0 0.5rem 0; color: white;">No Credits Remaining</h4>
-                <p style="margin: 0; color: white;">Purchase 20 additional analyses for $2.00 to continue using GhostOrShell.</p>
+            <div style="padding: 2rem; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 0.75rem; border: 2px solid #dc2626; margin-bottom: 1rem; text-align: center;">
+                <h3 style="margin: 0 0 1rem 0; color: #dc2626; font-family: 'Orbitron', monospace;">Unlock Full Access</h3>
+                <p style="margin: 0 0 1.5rem 0; color: #e2e8f0; font-size: 1.1rem;">You've used your free trial. Get 20 more analyses for just $2.00</p>
+                <div style="background: rgba(220, 38, 38, 0.1); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                    <p style="margin: 0; color: #fca5a5; font-weight: 600;">🚫 Document upload blocked until payment</p>
+                </div>
             </div>
             """, unsafe_allow_html=True)
             
-            if st.button("Purchase 20 Credits for $2.00", type="primary", use_container_width=True):
-                st.info("Stripe integration coming soon. Contact support for manual credit addition.")
-                return
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                if st.button("Purchase 20 Analyses for $2.00", type="primary", use_container_width=True):
+                    st.info("Stripe integration coming soon. Contact support for manual credit addition.")
+                    return
         
         if demo_mode:
             st.markdown("""
@@ -231,8 +239,8 @@ def analyze_document_tab():
             """, unsafe_allow_html=True)
         
         # File uploader
-        # Only show uploader if user has credits
-        if visitor_credits.credits_remaining > 0:
+        # Only show uploader if user hasn't exhausted free trial or has purchased credits
+        if not has_used_free_trial or visitor_credits.credits_remaining > 0:
             uploaded_file = st.file_uploader(
                 "Drag and drop your file here or click to browse",
                 type=["txt", "pdf", "docx", "jpg", "jpeg", "png"],
@@ -254,9 +262,9 @@ def analyze_document_tab():
             
             # Process button
             if st.button("Analyze Content", type="primary", use_container_width=True):
-                # Check credits again before processing
-                if visitor_credits.credits_remaining <= 0:
-                    st.error("No credits remaining. Please purchase credits to continue.")
+                # Check if user can proceed with analysis
+                if has_used_free_trial and visitor_credits.credits_remaining <= 0:
+                    st.error("No analyses remaining. Please purchase credits to continue.")
                     return
                     
                 try:
