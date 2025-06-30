@@ -27,6 +27,7 @@ GhostOrShell is an advanced AI content detection platform that analyzes document
 - **Font**: Orbitron monospace for headers, clean sans-serif for body
 
 ## Recent Changes
+- **2024-12-30**: Configured OpenAI API key as application secret for real AI detection
 - **2024-12-24**: Added image analysis support (.jpg, .png) with OCR
 - **2024-12-24**: Refined Tron aesthetic with toned-down neon effects
 - **2024-12-24**: Removed yellow elements for cleaner color palette
