@@ -3,13 +3,13 @@ import os
 from openai import OpenAI
 
 class AIDetector:
-    def __init__(self):
+    def __init__(self, api_key=None):
         """Initialize the AI detector with OpenAI client"""
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY environment variable is required")
+        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+        if not self.api_key:
+            raise ValueError("OpenAI API key is required")
         
-        self.client = OpenAI(api_key=api_key)
+        self.client = OpenAI(api_key=self.api_key)
     
     def detect_ai_content(self, text):
         """

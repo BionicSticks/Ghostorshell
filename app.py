@@ -15,11 +15,11 @@ st.set_page_config(
 )
 
 # Initialize processors
-@st.cache_resource
-def init_processors():
-    api_key = os.getenv("OPENAI_API_KEY")
+def init_processors(api_key=None):
+    if not api_key:
+        api_key = os.getenv("OPENAI_API_KEY")
     if api_key:
-        return AIDetector(), FileProcessor(), DatabaseManager()
+        return AIDetector(api_key), FileProcessor(), DatabaseManager()
     else:
         return DemoAIDetector(), FileProcessor(), DatabaseManager()
 
@@ -187,15 +187,38 @@ def analyze_document_tab():
     with col1:
         st.markdown("### Upload Document")
         
-        # Check for demo mode or API key
+        # Check for API key in environment or user input
         api_key = os.getenv("OPENAI_API_KEY")
+        
+        # API key input section
+        if not api_key:
+            with st.expander("🔑 Configure OpenAI API Key", expanded=True):
+                st.markdown("""
+                <div style="padding: 1rem; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 0.5rem; border: 1px solid #334155;">
+                    <p style="margin: 0 0 1rem 0; color: #e2e8f0;">Enter your OpenAI API key to enable real AI content detection:</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                user_api_key = st.text_input(
+                    "OpenAI API Key",
+                    type="password",
+                    help="Your API key will be used securely and not stored permanently",
+                    placeholder="sk-..."
+                )
+                
+                if user_api_key:
+                    api_key = user_api_key
+                    st.success("API key configured! Real AI detection enabled.")
+                else:
+                    st.info("Without an API key, the app will run in demo mode with simulated results.")
+        
         demo_mode = not api_key
         
         if demo_mode:
             st.markdown("""
             <div class="demo-banner">
                 <h4 style="margin: 0 0 0.5rem 0;">DEMO MODE ACTIVE</h4>
-                <p style="margin: 0; font-size: 0.9rem;">Using simulated AI detection. Configure OpenAI, Grok (xAI), or other compatible API key for live analysis.</p>
+                <p style="margin: 0; font-size: 0.9rem;">Using simulated AI detection. Add your OpenAI API key above for real analysis.</p>
             </div>
             """, unsafe_allow_html=True)
         
@@ -229,7 +252,7 @@ def analyze_document_tab():
             if st.button("Analyze Content", type="primary", use_container_width=True):
                 try:
                     # Initialize processors
-                    ai_detector, file_processor, db_manager = init_processors()
+                    ai_detector, file_processor, db_manager = init_processors(api_key)
                     
                     # Show processing status
                     with st.spinner("Processing file..."):
