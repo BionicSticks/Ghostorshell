@@ -7,8 +7,10 @@ GhostOrShell is an advanced AI content detection platform that analyzes document
 - **Document Analysis**: Supports .txt, .pdf, .docx, .jpg, and .png file formats
 - **AI Detection**: Uses OpenAI's GPT-4o model for content analysis
 - **OCR Support**: Text extraction from images using Tesseract OCR
-- **Demo Mode**: Simulated analysis when no API key is configured
-- **Database Storage**: PostgreSQL database for storing analysis history
+- **Credit System**: 1 free analysis per visitor, $2 for 20 additional analyses
+- **Visitor Tracking**: IP + browser fingerprinting for user identification
+- **Paywall Integration**: Stripe payment processing for credit purchases
+- **Database Storage**: PostgreSQL database for storing analysis history and credits
 - **Analysis History**: Dashboard with statistics and past results
 - **Tron Aesthetic**: Subtle neon cyan and purple color scheme with Orbitron font
 
@@ -27,6 +29,9 @@ GhostOrShell is an advanced AI content detection platform that analyzes document
 - **Font**: Orbitron monospace for headers, clean sans-serif for body
 
 ## Recent Changes
+- **2024-12-30**: Added credit system with visitor tracking (1 free analysis, $2 for 20 more)
+- **2024-12-30**: Implemented IP + browser fingerprinting for visitor identification
+- **2024-12-30**: Created paywall interface for credit purchases
 - **2024-12-30**: Configured OpenAI API key as application secret for real AI detection
 - **2024-12-24**: Added image analysis support (.jpg, .png) with OCR
 - **2024-12-24**: Refined Tron aesthetic with toned-down neon effects

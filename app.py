@@ -4,6 +4,7 @@ from ai_detector import AIDetector
 from demo_detector import DemoAIDetector
 from file_processor import FileProcessor
 from database import DatabaseManager
+from visitor_tracking import initialize_visitor_tracking
 import time
 
 # Configure page
@@ -180,6 +181,17 @@ def main():
         analysis_history_tab()
 
 def analyze_document_tab():
+    # Initialize visitor tracking
+    visitor_id, visitor_ip = initialize_visitor_tracking()
+    
+    # Check visitor credits
+    db_manager = DatabaseManager()
+    visitor_credits = db_manager.get_visitor_credits(visitor_id)
+    
+    if not visitor_credits:
+        # New visitor - create credit record
+        visitor_credits = db_manager.create_visitor_credit(visitor_id, visitor_ip)
+    
     # Main content area
     col1, col2 = st.columns([1, 1], gap="large")
     
@@ -190,6 +202,26 @@ def analyze_document_tab():
         api_key = os.getenv("OPENAI_API_KEY")
         demo_mode = not api_key
         
+        # Show credit status
+        if visitor_credits.credits_remaining > 0:
+            st.markdown(f"""
+            <div style="padding: 0.75rem; background: linear-gradient(135deg, #059669 0%, #10b981 100%); border-radius: 0.5rem; margin-bottom: 1rem;">
+                <p style="margin: 0; color: white; font-weight: 600;">Credits remaining: {visitor_credits.credits_remaining}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            # Show paywall
+            st.markdown("""
+            <div style="padding: 1.5rem; background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); border-radius: 0.5rem; margin-bottom: 1rem;">
+                <h4 style="margin: 0 0 0.5rem 0; color: white;">No Credits Remaining</h4>
+                <p style="margin: 0; color: white;">Purchase 20 additional analyses for $2.00 to continue using GhostOrShell.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if st.button("Purchase 20 Credits for $2.00", type="primary", use_container_width=True):
+                st.info("Stripe integration coming soon. Contact support for manual credit addition.")
+                return
+        
         if demo_mode:
             st.markdown("""
             <div class="demo-banner">
@@ -199,11 +231,15 @@ def analyze_document_tab():
             """, unsafe_allow_html=True)
         
         # File uploader
-        uploaded_file = st.file_uploader(
-            "Drag and drop your file here or click to browse",
-            type=["txt", "pdf", "docx", "jpg", "jpeg", "png"],
-            help="Supported formats: .txt, .pdf, .docx, .jpg, .png (max 10MB)"
-        )
+        # Only show uploader if user has credits
+        if visitor_credits.credits_remaining > 0:
+            uploaded_file = st.file_uploader(
+                "Drag and drop your file here or click to browse",
+                type=["txt", "pdf", "docx", "jpg", "jpeg", "png"],
+                help="Supported formats: .txt, .pdf, .docx, .jpg, .png (max 10MB)"
+            )
+        else:
+            uploaded_file = None
         
         if uploaded_file is not None:
             # Display file info in clean format
@@ -218,6 +254,11 @@ def analyze_document_tab():
             
             # Process button
             if st.button("Analyze Content", type="primary", use_container_width=True):
+                # Check credits again before processing
+                if visitor_credits.credits_remaining <= 0:
+                    st.error("No credits remaining. Please purchase credits to continue.")
+                    return
+                    
                 try:
                     # Initialize processors
                     ai_detector, file_processor, db_manager = init_processors()
@@ -249,6 +290,12 @@ def analyze_document_tab():
                         with st.spinner("Saving results..."):
                             try:
                                 file_extension = uploaded_file.name.split('.')[-1].lower()
+                                # Use credit and save analysis
+                                credit_used = db_manager.use_credit(visitor_id)
+                                if not credit_used:
+                                    st.error("Failed to process credit. Please try again.")
+                                    return
+                                
                                 record_id = db_manager.save_analysis(
                                     filename=uploaded_file.name,
                                     file_type=file_extension,
@@ -256,7 +303,9 @@ def analyze_document_tab():
                                     text_length=len(text_content),
                                     ai_probability=detection_result['ai_probability'],
                                     confidence=detection_result['confidence'],
-                                    reasoning=detection_result['reasoning']
+                                    reasoning=detection_result['reasoning'],
+                                    ip_address=visitor_ip,
+                                    visitor_id=visitor_id
                                 )
                                 st.session_state.record_id = record_id
                             except Exception as db_error:

@@ -206,3 +206,118 @@ class DatabaseManager:
             raise Exception(f"Failed to delete old records: {e}")
         finally:
             session.close()
+
+    def get_visitor_credits(self, visitor_id):
+        """
+        Get visitor credit information
+        
+        Args:
+            visitor_id: Unique visitor identifier
+            
+        Returns:
+            VisitorCredit object or None
+        """
+        session = self.get_session()
+        try:
+            return session.query(VisitorCredit).filter(
+                VisitorCredit.visitor_id == visitor_id
+            ).first()
+        except Exception as e:
+            return None
+        finally:
+            session.close()
+
+    def create_visitor_credit(self, visitor_id, ip_address):
+        """
+        Create new visitor credit record with 1 free credit
+        
+        Args:
+            visitor_id: Unique visitor identifier
+            ip_address: Client IP address
+            
+        Returns:
+            VisitorCredit object
+        """
+        session = self.get_session()
+        try:
+            visitor_credit = VisitorCredit(
+                visitor_id=visitor_id,
+                ip_address=ip_address,
+                credits_remaining=1
+            )
+            
+            session.add(visitor_credit)
+            session.commit()
+            session.refresh(visitor_credit)
+            return visitor_credit
+            
+        except Exception as e:
+            session.rollback()
+            raise Exception(f"Failed to create visitor credit: {e}")
+        finally:
+            session.close()
+
+    def use_credit(self, visitor_id):
+        """
+        Deduct one credit from visitor's account
+        
+        Args:
+            visitor_id: Unique visitor identifier
+            
+        Returns:
+            bool: True if credit was successfully deducted
+        """
+        session = self.get_session()
+        try:
+            visitor_credit = session.query(VisitorCredit).filter(
+                VisitorCredit.visitor_id == visitor_id
+            ).first()
+            
+            if visitor_credit and visitor_credit.credits_remaining > 0:
+                visitor_credit.credits_remaining -= 1
+                visitor_credit.last_activity = datetime.datetime.utcnow()
+                session.commit()
+                return True
+            
+            return False
+            
+        except Exception as e:
+            session.rollback()
+            return False
+        finally:
+            session.close()
+
+    def add_credits(self, visitor_id, credits_to_add, stripe_payment_id=None):
+        """
+        Add credits to visitor's account (after payment)
+        
+        Args:
+            visitor_id: Unique visitor identifier
+            credits_to_add: Number of credits to add
+            stripe_payment_id: Stripe payment ID for tracking
+            
+        Returns:
+            bool: True if credits were successfully added
+        """
+        session = self.get_session()
+        try:
+            visitor_credit = session.query(VisitorCredit).filter(
+                VisitorCredit.visitor_id == visitor_id
+            ).first()
+            
+            if visitor_credit:
+                visitor_credit.credits_remaining += credits_to_add
+                visitor_credit.total_purchased += credits_to_add
+                visitor_credit.last_activity = datetime.datetime.utcnow()
+                if stripe_payment_id:
+                    visitor_credit.stripe_payment_id = stripe_payment_id
+                session.commit()
+                return True
+            
+            return False
+            
+        except Exception as e:
+            session.rollback()
+            return False
+        finally:
+            session.close()
