@@ -1,3 +1,4 @@
+# GhostOrShell - AI Content Detection with Freemium Model
 import streamlit as st
 import os
 from ai_detector import AIDetector
